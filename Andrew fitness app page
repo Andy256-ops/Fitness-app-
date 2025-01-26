@@ -1,0 +1,391 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fitness Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Fitness Tracker</h1>
+  </header>
+  <main>
+    <section class="activity-section">
+      <h2><img src="flip.jpg">Activity  Log</h2>
+      <form>
+        <label for="activity-name">Activity Name:</label>
+        <input type="text" id="activity-name" placeholder="Activity Name"><br>
+        <label for="activity-duration">Duration (minutes):</label>
+        <input type="number" id="activity-duration" placeholder="Duration (minutes)"><br>
+        <button id="set-activity-btn">Set Activity </button>
+      </form>
+    </section>
+    <section class="step-counter-section">
+      <h2><img src="flap.jpg">Step Counter</h2>
+      <span id="step-count">0 steps</span>
+      <input type="number" id="daily-goal" placeholder="10000">
+      <button id="Goal-btn">Goal</button>
+    </section>
+    <section>
+        <canvas id="progress-chart"></canvas>
+        <div class="progress-chart">
+            <h2>Progress Chart</h2>
+            
+        </div>
+    </section>
+    <andy class="water intake">
+        <h2>water intake<img src="tip.jpeg"></h2>
+        <form>
+            <Label for="water-quantity">Add water intake:</Label>
+            <input type="number" id="water-quantity" placeholder="Quantity (ml)">
+            <button id="add-water-btn">Add water</button>
+            
+        </form>
+        <ul id="water-log"></ul>
+        <p id="total-water-consumed"></p>
+    </andy>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
+
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #000435;
+    letter-spacing: 2px;
+}
+
+header {
+    color:#57A0D2;
+    text-align: center;
+    font-size:25px;
+    border-radius:50px;
+    
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2em;
+}
+
+.activity-section {
+    background-color: #131E3A;
+    padding: 1em;
+    border: 1px solid #red;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width:300px;
+    height:280px;
+    border-radius:30px;
+    color:#57A0D2;
+    
+}
+
+.step-counter-section {
+    background-color: #131E3A;
+    padding: 4em;
+    border: 1px solid #ddd;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 2em;
+    width:200px;
+    height:220px;
+    border-radius:30px;
+}
+
+
+
+
+#activity-log {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#activity-log li {
+    padding: 0.5em;
+    border-bottom: 1px solid #ddd;
+}
+img {
+    width:30px;
+    height:20px;
+    border-radius:5px;
+}
+
+#activity-log {
+    border-bottom: none;
+}
+h2 {
+    text-align:center;
+    font-weight: bold;
+    color:#57A0D2;
+    font-size:40px;
+}
+button {
+    background-color:#57A0D2;
+    border-radius:23px;
+    color:white;
+    font-size:20px;
+    padding:1em;
+    
+}
+Label{
+    font-weight:bold;
+    font-size:30px;
+    color:white;
+    
+}
+#water-log {
+    list-style:none;
+    padding:0;
+    margin:0;
+}
+#water-log li {
+    padding:0.5em;
+    border-bottom:1px solid red;
+}
+#water-log li:last-child {
+    border-bottom:none;
+}
+
+span {
+    color:white;
+    font-size:30px;
+}
+andy {
+    background-color:white;
+    padding:2em;
+    border-radius:5px;
+}
+input {
+    background-color:aqua;
+    width:15em;
+    height:2em;
+    border-radius:20px;
+    text-align: center ;
+}
+.progress-chart svg{
+    transform:rotate(-90deg);
+}
+.progress-chart .progress-text{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate  (-50%,-50%);
+    font-size:24px;
+    font-weight:bold;
+}
+// Get the water log element
+const waterLogElement = document.getElementById('water-log');
+
+// Get the total water consumed element
+const totalWaterConsumedElement = document.getElementById('total-water-consumed');
+
+// Initialize the water log array
+let waterLog = [];
+
+// Initialize the total water consumed
+let totalWaterConsumed = 0;
+
+// Define a function to add water intake
+function addWaterIntake(quantity) {
+  // Create a new water log entry
+  const waterLogEntry = {
+    quantity: quantity,
+    timestamp: new Date().toLocaleTimeString()
+  };
+
+  // Add the water log entry to the water log array
+  waterLog.push(waterLogEntry);
+
+  // Update the total water consumed
+  totalWaterConsumed += quantity;
+
+  // Display the updated water log
+  displayWaterLog();
+
+  // Display the updated total water consumed
+  displayTotalWaterConsumed();
+}
+
+// Define a function to display the water log
+function displayWaterLog() {
+  // Clear the water log element
+  waterLogElement.innerHTML = '';
+
+  // Iterate over the water log array
+  waterLog.forEach((entry) => {
+    // Create a new list item element
+    const listItemElement = document.createElement('li');
+
+    // Set the text content of the list item element
+    listItemElement.textContent = `${entry.quantity}ml at ${entry.timestamp}`;
+
+    // Append the list item element to the water log element
+    waterLogElement.appendChild(listItemElement);
+  });
+}
+
+// Define a function to display the total water consumed
+function displayTotalWaterConsumed() {
+  // Set the text content of the total water consumed element
+  totalWaterConsumedElement.textContent = `Total Water Consumed: ${totalWaterConsumed}ml`;
+}
+
+// Get the add water button element
+const addWaterButtonElement = document.getElementById('add-water-btn');
+
+// Add an event listener to the add water button element
+addWaterButtonElement.addEventListener('click', (event) => {
+  // Prevent the default form submission behavior
+  event.preventDefault();
+
+  // Get the water quantity input element
+  const waterQuantityInputElement = document.getElementById('water-quantity');
+
+  // Get the water quantity value
+  const waterQuantityValue = parseInt(waterQuantityInputElement.value);
+
+  // Add the water intake
+  addWaterIntake(waterQuantityValue);
+
+  // Clear the water quantity input element
+  waterQuantityInputElement.value = '';
+});
+
+const stepCountElement = document.getElementById('step-count');
+
+// Initialize the step count
+let stepCount = 0;
+
+// Define a function to update the step count
+function updateStepCount() {
+  stepCountElement.textContent = `${stepCount} steps`;
+}
+
+// Define a function to handle device motion
+function handleDeviceMotion(event) {
+  // Get the acceleration data
+  const acceleration = event.acceleration;
+
+  // Check if the device is moving
+  if (acceleration.x > 2 || acceleration.y > 2 || acceleration.z > 2) {
+    // Increment the step count
+    stepCount++;
+
+    // Update the step count display
+    updateStepCount();
+
+    // Update the progress chart
+    updateProgressChart();
+  }
+}
+
+// Add an event listener for device motion
+window.addEventListener('devicemotion', handleDeviceMotion);
+
+// Get the set activity button
+const setActivityButton = document.getElementById('set-activity-btn');
+
+// Initialize the activity log
+const activityLog = [];
+
+// Initialize the progress chart data
+let progressChartData = {
+  labels: [],
+  datasets: [{
+    label: 'Progress',
+    data: [],
+    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+    borderColor: 'rgba(255, 99, 132, 1)',
+    borderWidth: 1
+  }]
+};
+
+// Create the progress chart
+const progressChart = new Chart(document.getElementById('progress-chart'), {
+  type: 'line',
+  data: progressChartData,
+  options: {
+    scales: {
+      y: {
+        beginAtZero: true
+      }
+    }
+  }
+});
+
+// Define a function to display the activity log
+function displayActivityLog() {
+  const activityLogElement = document.getElementById('activity-log');
+  activityLogElement.innerHTML = '';
+
+  activityLog.forEach((entry) => {
+    const entryElement = document.createElement('li');
+    entryElement.textContent = `${entry.name} - ${entry.duration} minutes - ${entry.steps} steps`;
+    activityLogElement.appendChild(entryElement);
+  });
+}
+
+// Define a function to handle setting an activity
+function handleSetActivity() {
+  // Get the activity name and duration
+  const activityName = document.getElementById('activity-name').value;
+  const activityDuration = document.getElementById('activity-duration').value;
+ 
+
+  // Create a new activity log entry
+  const activityLogEntry = {
+    name: activityName,
+    duration: activityDuration,
+    steps: stepCount,
+  };
+
+  // Add the activity log entry to the activity log
+  activityLog.push(activityLogEntry);
+
+  // Display the activity log
+  displayActivityLog();
+
+  // Reset the step count
+  stepCount = 0;
+
+  // Update the step count display
+  updateStepCount();
+}
+
+// Define a function to update the progress chart
+function updateProgressChart() {
+  // Add a new data point to the progress chart
+  progressChartData.labels.push(new Date().toLocaleTimeString());
+  progressChartData.datasets[0].data.push(stepCount);
+
+  // Update the progress chart
+  progressChart.update();
+}
+
+// Add an event listener to the set activity button
+setActivityButton.addEventListener('click', handleSetActivity);
+
+
+
+const progressValue = document.getElementById('progress-value');
+const progressCircle = document.querySelector('.progress-chart circle:nth-child(2)');
+
+let progress = 0;
+let progressInterval = setInterval(() => {
+    if (progress >= 100) {
+        clearInterval(progressInterval);
+    } else {
+        progress++;
+        progressValue.textContent = `${progress}%`;
+        progressCircle.style.strokeDashoffset = 565 - (progress / 100) * 565;
+    }
+}, 20);
+
+
+
